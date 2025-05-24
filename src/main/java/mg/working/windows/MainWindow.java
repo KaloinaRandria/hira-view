@@ -1,6 +1,9 @@
 package mg.working.windows;
 
 import javax.swing.*;
+
+import mg.working.listener.GenerateButtonListener;
+
 import java.awt.*;
 
 public class MainWindow extends JFrame {
@@ -39,6 +42,8 @@ public class MainWindow extends JFrame {
         bottomPanel.add(buttonRightPanel, BorderLayout.SOUTH);
 
         this.add(bottomPanel, BorderLayout.SOUTH);
+
+        jButton.addActionListener(new GenerateButtonListener());
 
         this.setVisible(true);
     }
