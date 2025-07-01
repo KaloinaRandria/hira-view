@@ -54,7 +54,6 @@ public class PowerpointTraitement {
                 ppt.write(out);
                 System.out.println("Présentation créée avec image de fond : " + filePath);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
