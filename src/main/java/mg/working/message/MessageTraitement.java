@@ -1,21 +1,22 @@
 package mg.working.message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageTraitement {
     public String[] getHira(String input) {
-        Pattern pattern = Pattern.compile("(\\d+)/(\\d+)");
+        Pattern pattern = Pattern.compile("(FF\\d+|\\d+)(?=/\\d+)");
         Matcher matcher = pattern.matcher(input);
 
-        // Utiliser une liste temporaire car on ne connaît pas à l'avance le nombre de matchs
-        java.util.List<String> hiraList = new java.util.ArrayList<>();
+        List<String> hiraList = new ArrayList<>();
 
         while (matcher.find()) {
+            // ON RÉCUPÈRE SEULEMENT LA PARTIE AVANT /
             hiraList.add(matcher.group(1));
         }
 
-        // Convertir la liste en tableau
         return hiraList.toArray(new String[0]);
     }
 }
