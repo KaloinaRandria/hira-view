@@ -13,7 +13,6 @@ public class MessageTraitement {
         List<String> hiraList = new ArrayList<>();
 
         while (matcher.find()) {
-            // ON RÉCUPÈRE SEULEMENT LA PARTIE AVANT /
             hiraList.add(matcher.group(1));
         }
 
