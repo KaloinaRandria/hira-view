@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageTraitement {
+
+    // MAKA HIRA AMIN'ILAY MESSAGE
     public String[] getHira(String input) {
         Pattern pattern = Pattern.compile("(FF\\d+|\\d+)(?=/\\d+)");
         Matcher matcher = pattern.matcher(input);
