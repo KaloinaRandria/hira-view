@@ -40,6 +40,7 @@ public class PowerpointTraitement {
         this.filePath = filePath;
     }
 
+    // MAKA FICHIER HIRA AMIN'NY ANARAN'NY HIRA
     public File getFichierPourHira(String hira) {
         Path dossier = hira.startsWith("FF") ? Paths.get("data/FF") : Paths.get("data/FFPM");
 
@@ -67,6 +68,8 @@ public class PowerpointTraitement {
         return null;
     }
 
+
+    // ATAO ANATY STRING ILAY CONTENU ANATY SLIDE REHETRA
     public String getContenuHira(String hira) {
         File fichier = getFichierPourHira(hira);
         if (fichier == null)
@@ -94,6 +97,8 @@ public class PowerpointTraitement {
         return contenu.toString().trim();
     }
 
+
+    // ATAO ANATY TABLEAU DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
     public List<String> getSlidesContenuHira(String hira) {
         File fichier = getFichierPourHira(hira);
         List<String> slidesContent = new ArrayList<>();
