@@ -48,10 +48,10 @@ public class PowerpointTraitement {
             System.out.println("Dossier introuvable : " + dossier);
             return null;
         }
-
+        String nom = "";
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier)) {
             for (Path entry : stream) {
-                String nom = entry.getFileName().toString();
+                nom = entry.getFileName().toString();
 
                 // Vérifie que le nom commence exactement par hira (et suivi d'un espace ou
                 // .pptx)
@@ -65,9 +65,9 @@ public class PowerpointTraitement {
         }
 
         System.out.println("Aucun fichier trouvé pour hira : " + hira);
+
         return null;
     }
-
 
     // ATAO ANATY STRING ILAY CONTENU ANATY SLIDE REHETRA
     public String getContenuHira(String hira) {
@@ -96,7 +96,6 @@ public class PowerpointTraitement {
 
         return contenu.toString().trim();
     }
-
 
     // ATAO ANATY TABLEAU DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
     public List<String> getSlidesContenuHira(String hira) {
