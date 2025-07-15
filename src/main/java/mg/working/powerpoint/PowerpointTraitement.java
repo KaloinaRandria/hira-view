@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +26,8 @@ public class PowerpointTraitement {
 
     String filePath;
 
-    public PowerpointTraitement() {}
+    public PowerpointTraitement() {
+    }
 
     public String getFilePath() {
         LocalDate today = LocalDate.now();
@@ -40,20 +42,36 @@ public class PowerpointTraitement {
 
     public String getContenuHira(String hira) {
         StringBuilder contenu = new StringBuilder();
-        Path path = Paths.get("data/FFPM", hira + ".pptx");
+        Path dossier = Paths.get("data/FFPM");
 
-        if (!Files.exists(path)) {
-            System.out.println("Fichier introuvable pour hira : " + hira);
+        if (!Files.isDirectory(dossier)) {
+            System.out.println("Dossier introuvable : " + dossier);
             return "";
         }
 
-        try (FileInputStream fis = new FileInputStream(path.toFile());
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+        File fichierCible = null;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier, hira + " *.pptx")) {
+            for (Path entry : stream) {
+                fichierCible = entry.toFile();
+                break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
 
+        if (fichierCible == null || !fichierCible.exists()) {
+            System.out.println("Aucun fichier trouvé pour hira : " + hira);
+            return "";
+        }
+
+        try (FileInputStream fis = new FileInputStream(fichierCible);
+                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+            XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
                 for (XSLFShape shape : slide.getShapes()) {
                     if (shape instanceof XSLFTextShape) {
-                        XSLFTextShape textShape = (XSLFTextShape) shape;
+                        textShape = (XSLFTextShape) shape;
                         contenu.append(textShape.getText()).append("\n");
                     }
                 }
@@ -69,22 +87,39 @@ public class PowerpointTraitement {
 
     public List<String> getSlidesContenuHira(String hira) {
         List<String> slidesContent = new ArrayList<>();
-        Path path = Paths.get("data", hira + ".pptx");
+        Path dossier = Paths.get("data/FFPM");
 
-        if (!Files.exists(path)) {
-            System.out.println("Fichier introuvable pour hira : " + hira);
+        if (!Files.isDirectory(dossier)) {
+            System.out.println("Dossier introuvable : " + dossier);
             return slidesContent;
         }
 
-        try (FileInputStream fis = new FileInputStream(path.toFile());
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+        File fichierCible = null;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier, hira + " *.pptx")) {
+            for (Path entry : stream) {
+                fichierCible = entry.toFile();
+                break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return slidesContent;
+        }
 
+        if (fichierCible == null || !fichierCible.exists()) {
+            System.out.println("Aucun fichier trouvé pour hira : " + hira);
+            return slidesContent;
+        }
+
+        try (FileInputStream fis = new FileInputStream(fichierCible);
+                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+            StringBuilder contenuSlide = null;
+            XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
-                StringBuilder contenuSlide = new StringBuilder();
+                contenuSlide = new StringBuilder();
 
                 for (XSLFShape shape : slide.getShapes()) {
                     if (shape instanceof XSLFTextShape) {
-                        XSLFTextShape textShape = (XSLFTextShape) shape;
+                        textShape = (XSLFTextShape) shape;
                         contenuSlide.append(textShape.getText()).append("\n");
                     }
                 }
