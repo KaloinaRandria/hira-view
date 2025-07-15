@@ -40,32 +40,41 @@ public class PowerpointTraitement {
         this.filePath = filePath;
     }
 
-    public String getContenuHira(String hira) {
-        StringBuilder contenu = new StringBuilder();
-        Path dossier = Paths.get("data/FFPM");
+    public File getFichierPourHira(String hira) {
+        Path dossier = hira.startsWith("FF") ? Paths.get("data/FF") : Paths.get("data/FFPM");
 
         if (!Files.isDirectory(dossier)) {
             System.out.println("Dossier introuvable : " + dossier);
-            return "";
+            return null;
         }
 
-        File fichierCible = null;
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier, hira + " *.pptx")) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier)) {
             for (Path entry : stream) {
-                fichierCible = entry.toFile();
-                break;
+                String nom = entry.getFileName().toString();
+
+                // Vérifie que le nom commence exactement par hira (et suivi d'un espace ou
+                // .pptx)
+                if (nom.toLowerCase().startsWith(hira.toLowerCase() + " ") ||
+                        nom.equalsIgnoreCase(hira + ".pptx")) {
+                    return entry.toFile();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
 
-        if (fichierCible == null || !fichierCible.exists()) {
-            System.out.println("Aucun fichier trouvé pour hira : " + hira);
-            return "";
-        }
+        System.out.println("Aucun fichier trouvé pour hira : " + hira);
+        return null;
+    }
 
-        try (FileInputStream fis = new FileInputStream(fichierCible);
+    public String getContenuHira(String hira) {
+        File fichier = getFichierPourHira(hira);
+        if (fichier == null)
+            return "";
+
+        StringBuilder contenu = new StringBuilder();
+
+        try (FileInputStream fis = new FileInputStream(fichier);
                 XMLSlideShow ppt = new XMLSlideShow(fis)) {
             XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
@@ -86,44 +95,23 @@ public class PowerpointTraitement {
     }
 
     public List<String> getSlidesContenuHira(String hira) {
+        File fichier = getFichierPourHira(hira);
         List<String> slidesContent = new ArrayList<>();
-        Path dossier = Paths.get("data/FFPM");
-
-        if (!Files.isDirectory(dossier)) {
-            System.out.println("Dossier introuvable : " + dossier);
+        if (fichier == null)
             return slidesContent;
-        }
 
-        File fichierCible = null;
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dossier, hira + " *.pptx")) {
-            for (Path entry : stream) {
-                fichierCible = entry.toFile();
-                break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return slidesContent;
-        }
-
-        if (fichierCible == null || !fichierCible.exists()) {
-            System.out.println("Aucun fichier trouvé pour hira : " + hira);
-            return slidesContent;
-        }
-
-        try (FileInputStream fis = new FileInputStream(fichierCible);
+        try (FileInputStream fis = new FileInputStream(fichier);
                 XMLSlideShow ppt = new XMLSlideShow(fis)) {
             StringBuilder contenuSlide = null;
             XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
                 contenuSlide = new StringBuilder();
-
                 for (XSLFShape shape : slide.getShapes()) {
                     if (shape instanceof XSLFTextShape) {
                         textShape = (XSLFTextShape) shape;
                         contenuSlide.append(textShape.getText()).append("\n");
                     }
                 }
-
                 slidesContent.add(contenuSlide.toString().trim());
             }
 
