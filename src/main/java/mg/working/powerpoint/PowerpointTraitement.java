@@ -25,6 +25,8 @@ public class PowerpointTraitement {
 
     String filePath;
 
+    public PowerpointTraitement() {}
+
     public String getFilePath() {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -38,7 +40,7 @@ public class PowerpointTraitement {
 
     public String getContenuHira(String hira) {
         StringBuilder contenu = new StringBuilder();
-        Path path = Paths.get("data", hira + ".pptx");
+        Path path = Paths.get("data/FFPM", hira + ".pptx");
 
         if (!Files.exists(path)) {
             System.out.println("Fichier introuvable pour hira : " + hira);
