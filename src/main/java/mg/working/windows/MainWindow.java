@@ -43,7 +43,7 @@ public class MainWindow extends JFrame {
 
         this.add(bottomPanel, BorderLayout.SOUTH);
 
-        jButton.addActionListener(new GenerateButtonListener());
+        jButton.addActionListener(new GenerateButtonListener(jTextArea));
 
         this.setVisible(true);
     }

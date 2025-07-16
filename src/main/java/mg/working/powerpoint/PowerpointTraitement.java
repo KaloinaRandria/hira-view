@@ -15,11 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.sl.usermodel.PictureData;
+import org.apache.poi.sl.usermodel.TextParagraph;
+import java.awt.Color;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFTextBox;
+import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
+import org.apache.poi.xslf.usermodel.XSLFTextRun;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
 
 public class PowerpointTraitement {
@@ -41,7 +46,7 @@ public class PowerpointTraitement {
     }
 
     // MAKA FICHIER HIRA AMIN'NY ANARAN'NY HIRA
-    public File getFichierPourHira(String hira) {
+    private File getFichierPourHira(String hira) {
         Path dossier = hira.startsWith("FF") ? Paths.get("data/FF") : Paths.get("data/FFPM");
 
         if (!Files.isDirectory(dossier)) {
@@ -129,23 +134,63 @@ public class PowerpointTraitement {
     public PowerpointTraitement(String[] hira) {
         this.filePath = getFilePath();
 
+        System.out.println("isan ny hira : " + hira.length);
+
+        List<String> slidesContent;
+
+        int a = 0;
+
         try (XMLSlideShow ppt = new XMLSlideShow()) {
-            ppt.setPageSize(new Dimension(1920, 1080));
+            File imageFile = null;
+            byte[] pictureData = null;
+            XSLFPictureData pd = null;
+            XSLFSlide slide = null;
+            XSLFPictureShape picture = null;
+            XSLFTextBox textBox = null;
+            XSLFTextParagraph paragraph = null;
+            XSLFTextRun run = null;
+            ppt.setPageSize(new Dimension(960, 540)); // largeur: 33,87cm ; hauteur: 19,05cm
+            for (int i = 0; i < hira.length; i++) {
+                slidesContent = getSlidesContenuHira(hira[i]);
 
-            // Lire l'image de fond
-            File imageFile = new File("img/background/background.jpg");
-            byte[] pictureData = new FileInputStream(imageFile).readAllBytes();
+                System.out.println("isan ny slide amin ny hira " + hira[i] + " : " + slidesContent.size());
 
-            // Ajouter l'image à la présentation
-            XSLFPictureData pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+                System.out.println("----------------------");
 
-            // Créer une slide
-            XSLFSlide slide = ppt.createSlide();
+                for (int j = 0; j < slidesContent.size(); j++) {
 
-            // Insérer l'image en fond (plein écran)
-            XSLFPictureShape picture = slide.createPicture(pd);
-            picture.setAnchor(new java.awt.Rectangle(0, 0, 1920, 1080));
+                    // Lire l'image de fond
+                    imageFile = new File("img/background/background.jpg");
+                    pictureData = new FileInputStream(imageFile).readAllBytes();
 
+                    // Ajouter l'image à la présentation
+                    pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+
+                    // Créer une slide
+                    slide = ppt.createSlide();
+
+                    // Insérer l'image en fond (plein écran)
+                    picture = slide.createPicture(pd);
+                    picture.setAnchor(new java.awt.Rectangle(0, 0, 960, 540));
+
+                    // ✅ Ajouter le texte dans la slide
+                    textBox = slide.createTextBox();
+                    textBox.setAnchor(new java.awt.Rectangle(50, 25, 860, 440));
+
+                    paragraph = textBox.addNewTextParagraph();
+                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+
+                    run = paragraph.addNewTextRun();
+                    run.setText(slidesContent.get(j));
+                    run.setFontSize(45.0);
+                    run.setFontColor(Color.WHITE);
+                    run.setBold(true);
+                    run.setFontFamily("Verdana");
+                    a++;
+                }
+            }
+
+            System.out.println("Fitambaran ny slide namboarina : " + a);
             // Sauvegarder le fichier
             try (FileOutputStream out = new FileOutputStream(filePath)) {
                 ppt.write(out);
