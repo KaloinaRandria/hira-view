@@ -97,7 +97,7 @@ public class PowerpointTraitement {
         return contenu.toString().trim();
     }
 
-    // ATAO ANATY TABLEAU DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
+    // ATAO ANATY LISTE DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
     public List<String> getSlidesContenuHira(String hira) {
         File fichier = getFichierPourHira(hira);
         List<String> slidesContent = new ArrayList<>();
