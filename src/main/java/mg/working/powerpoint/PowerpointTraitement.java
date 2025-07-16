@@ -131,6 +131,7 @@ public class PowerpointTraitement {
         return slidesContent;
     }
 
+    @SuppressWarnings("resource")
     public PowerpointTraitement(String[] hira) {
         this.filePath = getFilePath();
 
@@ -149,7 +150,7 @@ public class PowerpointTraitement {
             XSLFTextBox textBox = null;
             XSLFTextParagraph paragraph = null;
             XSLFTextRun run = null;
-            ppt.setPageSize(new Dimension(960, 540)); // largeur: 33,87cm ; hauteur: 19,05cm
+            ppt.setPageSize(new Dimension(960, 540));
             for (int i = 0; i < hira.length; i++) {
                 slidesContent = getSlidesContenuHira(hira[i]);
 
