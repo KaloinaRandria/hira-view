@@ -12,7 +12,12 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.sl.usermodel.TextParagraph;
@@ -131,11 +136,133 @@ public class PowerpointTraitement {
         return slidesContent;
     }
 
-    @SuppressWarnings("resource")
-    public PowerpointTraitement(String[] hira) {
+    // ATAO ANATY LISTE DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
+    public List<String> getSlidesContenuHiraAndininy(Map.Entry<String, List<String>> hira) {
+        File fichier = getFichierPourHira(hira.getKey());
+        List<String> slidesContent = new ArrayList<>();
+        if (fichier == null)
+            return slidesContent;
+
+        Set<String> versetsDemandes = new HashSet<>(hira.getValue());
+        String versetEnCours = null;
+        boolean ajouter = false;
+
+        try (FileInputStream fis = new FileInputStream(fichier);
+                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+            StringBuilder contenuSlide;
+            XSLFTextShape textShape;
+            String contenu;
+            String premiereLigne;
+            Matcher m;
+            for (XSLFSlide slide : ppt.getSlides()) {
+                contenuSlide = new StringBuilder();
+
+                for (XSLFShape shape : slide.getShapes()) {
+                    if (shape instanceof XSLFTextShape) {
+                        textShape = (XSLFTextShape) shape;
+                        contenuSlide.append(textShape.getText()).append("\n");
+                    }
+                }
+
+                contenu = contenuSlide.toString().trim();
+                premiereLigne = contenu.split("\n")[1].trim();
+
+                // Cherche si la première ligne commence par un numéro suivi de .
+                m = Pattern.compile("^(\\d+)\\..*").matcher(premiereLigne);
+                if (m.matches()) {
+                    versetEnCours = m.group(1);
+                    ajouter = versetsDemandes.contains(versetEnCours);
+                }
+
+                if (ajouter) {
+                    slidesContent.add(contenu);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return slidesContent;
+    }
+
+    // @SuppressWarnings("resource")
+    // public PowerpointTraitement(String[] hira) {
+    // this.filePath = getFilePath();
+
+    // System.out.println("isan ny hira : " + hira.length);
+
+    // List<String> slidesContent;
+
+    // int a = 0;
+
+    // try (XMLSlideShow ppt = new XMLSlideShow()) {
+    // File imageFile = null;
+    // byte[] pictureData = null;
+    // XSLFPictureData pd = null;
+    // XSLFSlide slide = null;
+    // XSLFPictureShape picture = null;
+    // XSLFTextBox textBox = null;
+    // XSLFTextParagraph paragraph = null;
+    // XSLFTextRun run = null;
+    // ppt.setPageSize(new Dimension(960, 540));
+    // for (int i = 0; i < hira.length; i++) {
+    // slidesContent = getSlidesContenuHira(hira[i]);
+
+    // System.out.println("isan ny slide amin ny hira " + hira[i] + " : " +
+    // slidesContent.size());
+
+    // System.out.println("----------------------");
+
+    // for (int j = 0; j < slidesContent.size(); j++) {
+
+    // // Lire l'image de fond
+    // imageFile = new File("img/background/background.jpg");
+    // pictureData = new FileInputStream(imageFile).readAllBytes();
+
+    // // Ajouter l'image à la présentation
+    // pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+
+    // // Créer une slide
+    // slide = ppt.createSlide();
+
+    // // Insérer l'image en fond (plein écran)
+    // picture = slide.createPicture(pd);
+    // picture.setAnchor(new java.awt.Rectangle(0, 0, 960, 540));
+
+    // // ✅ Ajouter le texte dans la slide
+    // textBox = slide.createTextBox();
+    // textBox.setAnchor(new java.awt.Rectangle(50, 25, 860, 440));
+
+    // paragraph = textBox.addNewTextParagraph();
+    // paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+
+    // run = paragraph.addNewTextRun();
+    // run.setText(slidesContent.get(j));
+    // run.setFontSize(45.0);
+    // run.setFontColor(Color.WHITE);
+    // run.setBold(true);
+    // run.setFontFamily("Verdana");
+    // a++;
+    // }
+    // }
+
+    // System.out.println("Fitambaran ny slide namboarina : " + a);
+    // // Sauvegarder le fichier
+    // try (FileOutputStream out = new FileOutputStream(filePath)) {
+    // ppt.write(out);
+    // System.out.println("Présentation créée avec image de fond : " + filePath);
+    // }
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+
+    // }
+
+    public PowerpointTraitement(Map<String, List<String>> hiraAndininy) {
         this.filePath = getFilePath();
 
-        System.out.println("isan ny hira : " + hira.length);
+        System.out.println("isan ny hira : " + hiraAndininy.size());
 
         List<String> slidesContent;
 
@@ -150,11 +277,13 @@ public class PowerpointTraitement {
             XSLFTextBox textBox = null;
             XSLFTextParagraph paragraph = null;
             XSLFTextRun run = null;
+            Map.Entry<String, List<String>> hira;
             ppt.setPageSize(new Dimension(960, 540));
-            for (int i = 0; i < hira.length; i++) {
-                slidesContent = getSlidesContenuHira(hira[i]);
+            for (int i = 0; i < hiraAndininy.size(); i++) {
+                hira = (Map.Entry<String, List<String>>) hiraAndininy.entrySet().toArray(new Map.Entry[0])[i];
+                slidesContent = getSlidesContenuHiraAndininy(hira);
 
-                System.out.println("isan ny slide amin ny hira " + hira[i] + " : " + slidesContent.size());
+                System.out.println("isan ny slide amin ny hira " + hira + " : " + slidesContent.size());
 
                 System.out.println("----------------------");
 

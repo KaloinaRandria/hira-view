@@ -25,7 +25,7 @@ public class MainWindow extends JFrame {
         gbc.anchor = GridBagConstraints.NORTHWEST;
         centerPanel.add(jLabel, gbc);
 
-        JTextArea jTextArea = new JTextArea(10, 50);
+        JTextArea jTextArea = new JTextArea(5, 50);
         JScrollPane scrollPane = new JScrollPane(jTextArea);
         gbc.gridx = 1;
         gbc.gridy = 0;
