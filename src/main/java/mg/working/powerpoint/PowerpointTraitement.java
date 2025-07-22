@@ -154,6 +154,7 @@ public class PowerpointTraitement {
             String contenu;
             String premiereLigne;
             Matcher m;
+            String[] ligne;
             for (XSLFSlide slide : ppt.getSlides()) {
                 contenuSlide = new StringBuilder();
 
@@ -165,12 +166,32 @@ public class PowerpointTraitement {
                 }
 
                 contenu = contenuSlide.toString().trim();
-                premiereLigne = contenu.split("\n")[1].trim();
+                ligne = contenu.split("\n");
 
-                // Cherche si la première ligne commence par un numéro suivi de .
+                // INITIALISER LA LIGNE A VERIFIER (0 PAR DEFAUT)
+                premiereLigne = ligne[0].trim();
+
+                // Si la première ligne contient "hira" (ex: "Hira 171"), on regarde la ligne
+                // suivante
+                if (premiereLigne.toLowerCase().matches("hira\\s*\\d+")) {
+                    if (ligne.length > 1) {
+                        premiereLigne = ligne[1].trim();
+                    } else {
+                        premiereLigne = ""; // éviter index out of bounds
+                    }
+                }
+
+                // MIJERY RAHA MISY "NUMÉRO." AO AMIN'ILAY LIGNE
                 m = Pattern.compile("^(\\d+)\\..*").matcher(premiereLigne);
+
                 if (m.matches()) {
+                    // MAKA ILAY NUMÉRO AMIN'ILAY LIGNE
                     versetEnCours = m.group(1);
+
+                    System.out.println("verset en cours 0 : " + m.group(0));
+                    System.out.println("verset en cours 1 : " + m.group(1));
+
+                    // MIJERY RAHA MITOVY ILAY NUMÉRO AMIN'ILAY LIGNE SY ILAY NUMÉRO NANGATAHANA
                     ajouter = versetsDemandes.contains(versetEnCours);
                 }
 
