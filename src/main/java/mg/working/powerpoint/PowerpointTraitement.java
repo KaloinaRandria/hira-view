@@ -188,9 +188,6 @@ public class PowerpointTraitement {
                     // MAKA ILAY NUMÉRO AMIN'ILAY LIGNE
                     versetEnCours = m.group(1);
 
-                    System.out.println("verset en cours 0 : " + m.group(0));
-                    System.out.println("verset en cours 1 : " + m.group(1));
-
                     // MIJERY RAHA MITOVY ILAY NUMÉRO AMIN'ILAY LIGNE SY ILAY NUMÉRO NANGATAHANA
                     ajouter = versetsDemandes.contains(versetEnCours);
                 }
