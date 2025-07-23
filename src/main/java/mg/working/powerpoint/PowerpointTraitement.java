@@ -239,7 +239,7 @@ public class PowerpointTraitement {
             rTitre.setText(titre);
             rTitre.setFontSize(29.0);
             rTitre.setBold(true);
-            rTitre.setFontColor(new Color(255, 204, 0)); // or jaune\
+            rTitre.setFontColor(new Color(255, 204, 0)); // or jaune
             rTitre.setFontFamily("Verdana");
 
             // CONTENU EN BAS
@@ -249,38 +249,65 @@ public class PowerpointTraitement {
             lignes = contenuSlide.get(j).split("\n");
 
             boolean premiereLigne = true;
+            String reste = "";
+            String ligne = "";
+            for (int i = 0; i < lignes.length; i++) {
+                ligne = lignes[i].trim();
 
-            for (String ligne : lignes) {
-
-                // 🔸 Ignorer la première ligne si elle commence par "HIRA" suivi d'un espace et
-                // d'un nombre
+                // 🔸 Ignorer la première ligne si elle commence par "HIRA <nombre>"
                 if (premiereLigne && ligne.matches("^HIRA\\s+\\d+.*")) {
                     premiereLigne = false;
-                    continue; // on saute cette ligne
+                    continue;
                 }
 
                 premiereLigne = false;
+
+                // 🔸 Ignorer les lignes de type "F.F 16", "FF16", etc.
+                if (ligne.matches(".*[A-Za-z]+\\s*\\.?\\s*[0-9]+.*")) {
+                    continue;
+                }
 
                 pBody = bodyBox.addNewTextParagraph();
                 pBody.setTextAlign(TextAlign.CENTER);
                 rBody = pBody.addNewTextRun();
 
                 if (ligne.matches("^\\d+\\..*")) {
-                    // Verset commence ici — ex: "2. Ry Jesosy..."
-                    String numero = ligne.split("\\.")[0];
-                    rBody.setText(numero + ". ");
+                    reste = ligne.substring(ligne.indexOf('.') + 1).trim();
+                    rBody.setText(ligne.split("\\.")[0] + "- ");
                     rBody.setFontSize(45.0);
-                    rBody.setFontColor(new Color(255, 204, 0)); // même couleur que le titre
+                    rBody.setFontColor(new Color(255, 204, 0));
                     rBody.setBold(true);
                     rBody.setFontFamily("Verdana");
 
-                    // Ajouter le reste de la ligne dans une autre partie
                     rBodyReste = pBody.addNewTextRun();
-                    rBodyReste.setText(ligne.substring(ligne.indexOf('.') + 1).trim());
+                    rBodyReste.setText(reste);
                     rBodyReste.setFontSize(45.0);
                     rBodyReste.setFontColor(Color.WHITE);
                     rBodyReste.setBold(true);
                     rBodyReste.setFontFamily("Verdana");
+
+                } else if (ligne.equalsIgnoreCase("Fiverenana")) {
+                    // Prendre la ligne suivante comme "reste", si elle existe
+                    reste = "";
+                    if (i + 1 < lignes.length) {
+                        reste = lignes[i + 1].trim();
+                        i++; // On saute la ligne suivante car elle est déjà traitée ici
+                    }
+
+                    rBody.setText("Fiv:");
+                    rBody.setFontSize(45.0);
+                    rBody.setFontColor(new Color(255, 204, 0));
+                    rBody.setBold(true);
+                    rBody.setFontFamily("Verdana");
+
+                    if (!reste.isEmpty()) {
+                        rBodyReste = pBody.addNewTextRun();
+                        rBodyReste.setText(" " + reste);
+                        rBodyReste.setFontSize(45.0);
+                        rBodyReste.setFontColor(Color.WHITE);
+                        rBodyReste.setBold(true);
+                        rBodyReste.setFontFamily("Verdana");
+                    }
                 } else {
                     rBody.setText(ligne);
                     rBody.setFontSize(45.0);
@@ -289,21 +316,6 @@ public class PowerpointTraitement {
                     rBody.setFontFamily("Verdana");
                 }
             }
-
-            // ✅ AJOUTER LE TEXTE DANS LE SLIDE
-            // textBox = slide.createTextBox();
-            // textBox.setAnchor(new java.awt.Rectangle(50, 25, 860, 440));
-
-            // paragraph = textBox.addNewTextParagraph();
-            // paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-
-            // run = paragraph.addNewTextRun();
-            // run.setText(contenuSlide.get(j));
-            // run.setFontSize(45.0);
-            // run.setFontColor(Color.WHITE);
-            // run.setBold(true);
-            // run.setFontFamily("Verdana");
-            // a++;
         }
     }
 
