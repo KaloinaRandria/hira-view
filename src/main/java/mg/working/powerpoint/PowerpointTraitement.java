@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,8 +68,8 @@ public class PowerpointTraitement {
 
                 // Vérifie que le nom commence exactement par hira (et suivi d'un espace ou
                 // .pptx)
-                if (nom.toLowerCase().startsWith(hira.toLowerCase() + " ") ||
-                        nom.equalsIgnoreCase(hira + ".pptx")) {
+                if (nom.toLowerCase().startsWith(hira.toLowerCase() + " ")
+                        || nom.equalsIgnoreCase(hira + ".pptx")) {
                     return entry.toFile();
                 }
             }
@@ -84,13 +85,13 @@ public class PowerpointTraitement {
     // ATAO ANATY STRING ILAY CONTENU ANATY SLIDE REHETRA
     public String getContenuHira(String hira) {
         File fichier = getFichierPourHira(hira);
-        if (fichier == null)
+        if (fichier == null) {
             return "";
+        }
 
         StringBuilder contenu = new StringBuilder();
 
-        try (FileInputStream fis = new FileInputStream(fichier);
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+        try (FileInputStream fis = new FileInputStream(fichier); XMLSlideShow ppt = new XMLSlideShow(fis)) {
             XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
                 for (XSLFShape shape : slide.getShapes()) {
@@ -113,11 +114,11 @@ public class PowerpointTraitement {
     public List<String> getSlidesContenuHira(String hira) {
         File fichier = getFichierPourHira(hira);
         List<String> slidesContent = new ArrayList<>();
-        if (fichier == null)
+        if (fichier == null) {
             return slidesContent;
+        }
 
-        try (FileInputStream fis = new FileInputStream(fichier);
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+        try (FileInputStream fis = new FileInputStream(fichier); XMLSlideShow ppt = new XMLSlideShow(fis)) {
             StringBuilder contenuSlide = null;
             XSLFTextShape textShape = null;
             for (XSLFSlide slide : ppt.getSlides()) {
@@ -142,15 +143,15 @@ public class PowerpointTraitement {
     public List<String> getSlidesContenuHiraAndininy(Map.Entry<String, List<String>> hira) {
         File fichier = getFichierPourHira(hira.getKey());
         List<String> slidesContent = new ArrayList<>();
-        if (fichier == null)
+        if (fichier == null) {
             return slidesContent;
+        }
 
         Set<String> versetsDemandes = new HashSet<>(hira.getValue());
         String versetEnCours = null;
         boolean ajouter = false;
 
-        try (FileInputStream fis = new FileInputStream(fichier);
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
+        try (FileInputStream fis = new FileInputStream(fichier); XMLSlideShow ppt = new XMLSlideShow(fis)) {
             StringBuilder contenuSlide;
             XSLFTextShape textShape;
             String contenu;
@@ -310,7 +311,7 @@ public class PowerpointTraitement {
         }
     }
 
-    public PowerpointTraitement(Map<String, List<String>> hiraAndininy , List<String> intermediaireHira) {
+    public PowerpointTraitement(Map<String, List<String>> hiraAndininy, List<String> intermediaireHira) {
         this.filePath = getFilePath();
 
         System.out.println("isan ny hira : " + hiraAndininy.size());
@@ -345,6 +346,40 @@ public class PowerpointTraitement {
 
             List<String> andininys = null;
             ppt.setPageSize(new Dimension(960, 540));
+
+            // === Générer une slide par intermédiaire unique ===
+            Set<String> uniqueIntermediaires = new LinkedHashSet<>(intermediaireHira);
+            for (String inter : uniqueIntermediaires) {
+                slide = ppt.createSlide();
+
+                // String safeInter = inter.replaceAll("[^a-zA-Z0-9]", "_");
+                String imagePath = "img/" + inter + ".jpg";
+                imageFile = new File(imagePath);
+
+                // Si image spécifique introuvable, utiliser une image par défaut
+                if (!imageFile.exists()) {
+                    imageFile = new File("img/default.jpg");
+                }
+
+                if (imageFile.exists()) {
+                    pictureData = Files.readAllBytes(imageFile.toPath());
+                    pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+                    picture = slide.createPicture(pd);
+                    picture.setAnchor(new Rectangle(0, 0, 960, 540));
+                } else {
+                    // Aucun fichier image disponible, afficher le texte
+                    titreBox = slide.createTextBox();
+                    titreBox.setAnchor(new Rectangle(100, 200, 760, 140));
+                    pTitre = titreBox.addNewTextParagraph();
+                    rTitre = pTitre.addNewTextRun();
+                    rTitre.setText(inter);
+                    rTitre.setFontSize(48.0);
+                    rTitre.setBold(true);
+                    rTitre.setFontColor(Color.BLACK);
+                    pTitre.setTextAlign(TextAlign.CENTER);
+                }
+            }
+
             for (int i = 0; i < hiraAndininy.size(); i++) {
                 hira = (Map.Entry<String, List<String>>) hiraAndininy.entrySet().toArray(new Map.Entry[0])[i];
 
@@ -374,11 +409,7 @@ public class PowerpointTraitement {
                         imageFile, pictureData, pd, slide,
                         picture, titreBox, pTitre, rTitre, bodyBox, pBody, rBody, rBodyReste,
                         ppt, a);
-                
-                for(String inter : intermediaireHira) {
-                    
-                }
-                                        
+
             }
 
             System.out.println("Fitambaran ny slide namboarina : " + a);
