@@ -1,6 +1,8 @@
 package mg.working.powerpoint;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,8 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.sl.usermodel.PictureData;
-import org.apache.poi.sl.usermodel.TextParagraph;
-import java.awt.Color;
+import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
+import org.apache.poi.sl.usermodel.VerticalAlignment;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xslf.usermodel.XSLFPictureShape;
@@ -204,6 +206,107 @@ public class PowerpointTraitement {
         return slidesContent;
     }
 
+    // MANORATRA ANATY SLIDE MIARAKA AMIN'NY STYLE
+    private void ecrireContenuSlide(List<String> contenuSlide, String titre, String[] lignes, String imagePath,
+            File imageFile, byte[] pictureData,
+            XSLFPictureData pd, XSLFSlide slide, XSLFPictureShape picture, XSLFTextBox titreBox,
+            XSLFTextParagraph pTitre, XSLFTextRun rTitre, XSLFTextBox bodyBox, XSLFTextParagraph pBody,
+            XSLFTextRun rBody, XSLFTextRun rBodyReste, XMLSlideShow ppt, int a) throws IOException {
+
+        for (int j = 0; j < contenuSlide.size(); j++) {
+
+            imageFile = new File(imagePath);
+            try (FileInputStream imageFis = new FileInputStream(imageFile)) {
+                pictureData = imageFis.readAllBytes();
+            }
+
+            // AJOUTER L'IMAGE À LA PRÉSENTATION
+            pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+
+            // CRÉER LE SLIDE
+            slide = ppt.createSlide();
+
+            // INSÉRER L'IMAGE EN FOND (PLEIN ÉCRAN)
+            picture = slide.createPicture(pd);
+            picture.setAnchor(new java.awt.Rectangle(0, 0, 960, 540));
+
+            // TITRE EN HAUT
+            titreBox = slide.createTextBox();
+            titreBox.setAnchor(new Rectangle(390, -15, 750, 60)); // position et taille
+            pTitre = titreBox.addNewTextParagraph();
+            pTitre.setTextAlign(TextAlign.LEFT);
+            rTitre = pTitre.addNewTextRun();
+            rTitre.setText(titre);
+            rTitre.setFontSize(29.0);
+            rTitre.setBold(true);
+            rTitre.setFontColor(new Color(255, 204, 0)); // or jaune\
+            rTitre.setFontFamily("Verdana");
+
+            // CONTENU EN BAS
+            bodyBox = slide.createTextBox();
+            bodyBox.setAnchor(new Rectangle(54, 40, 860, 400)); // position et taille
+            bodyBox.setVerticalAlignment(VerticalAlignment.TOP);
+            lignes = contenuSlide.get(j).split("\n");
+
+            boolean premiereLigne = true;
+
+            for (String ligne : lignes) {
+
+                // 🔸 Ignorer la première ligne si elle commence par "HIRA" suivi d'un espace et
+                // d'un nombre
+                if (premiereLigne && ligne.matches("^HIRA\\s+\\d+.*")) {
+                    premiereLigne = false;
+                    continue; // on saute cette ligne
+                }
+
+                premiereLigne = false;
+
+                pBody = bodyBox.addNewTextParagraph();
+                pBody.setTextAlign(TextAlign.CENTER);
+                rBody = pBody.addNewTextRun();
+
+                if (ligne.matches("^\\d+\\..*")) {
+                    // Verset commence ici — ex: "2. Ry Jesosy..."
+                    String numero = ligne.split("\\.")[0];
+                    rBody.setText(numero + ". ");
+                    rBody.setFontSize(45.0);
+                    rBody.setFontColor(new Color(255, 204, 0)); // même couleur que le titre
+                    rBody.setBold(true);
+                    rBody.setFontFamily("Verdana");
+
+                    // Ajouter le reste de la ligne dans une autre partie
+                    rBodyReste = pBody.addNewTextRun();
+                    rBodyReste.setText(ligne.substring(ligne.indexOf('.') + 1).trim());
+                    rBodyReste.setFontSize(45.0);
+                    rBodyReste.setFontColor(Color.WHITE);
+                    rBodyReste.setBold(true);
+                    rBodyReste.setFontFamily("Verdana");
+                } else {
+                    rBody.setText(ligne);
+                    rBody.setFontSize(45.0);
+                    rBody.setFontColor(Color.WHITE);
+                    rBody.setBold(true);
+                    rBody.setFontFamily("Verdana");
+                }
+            }
+
+            // ✅ AJOUTER LE TEXTE DANS LE SLIDE
+            // textBox = slide.createTextBox();
+            // textBox.setAnchor(new java.awt.Rectangle(50, 25, 860, 440));
+
+            // paragraph = textBox.addNewTextParagraph();
+            // paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
+
+            // run = paragraph.addNewTextRun();
+            // run.setText(contenuSlide.get(j));
+            // run.setFontSize(45.0);
+            // run.setFontColor(Color.WHITE);
+            // run.setBold(true);
+            // run.setFontFamily("Verdana");
+            // a++;
+        }
+    }
+
     public PowerpointTraitement(Map<String, List<String>> hiraAndininy) {
         this.filePath = getFilePath();
 
@@ -213,56 +316,61 @@ public class PowerpointTraitement {
 
         int a = 0;
 
+        String titre = "";
+
         try (XMLSlideShow ppt = new XMLSlideShow()) {
             File imageFile = null;
             byte[] pictureData = null;
             XSLFPictureData pd = null;
             XSLFSlide slide = null;
             XSLFPictureShape picture = null;
-            XSLFTextBox textBox = null;
-            XSLFTextParagraph paragraph = null;
-            XSLFTextRun run = null;
+
+            XSLFTextBox titreBox = null;
+            XSLFTextParagraph pTitre = null;
+            XSLFTextRun rTitre = null;
+
+            XSLFTextBox bodyBox = null;
+            XSLFTextParagraph pBody = null;
+            XSLFTextRun rBody = null;
+            XSLFTextRun rBodyReste = null;
+
             Map.Entry<String, List<String>> hira;
+
+            String[] lignes = null;
+            String hiraNumero = "";
+            String typeTitre = "";
+
+            List<String> andininys = null;
             ppt.setPageSize(new Dimension(960, 540));
             for (int i = 0; i < hiraAndininy.size(); i++) {
                 hira = (Map.Entry<String, List<String>>) hiraAndininy.entrySet().toArray(new Map.Entry[0])[i];
+
+                hiraNumero = hira.getKey();
+                andininys = hira.getValue();
+                typeTitre = hiraNumero.startsWith("FF") ? " FANAMPINY" : "";
+                hiraNumero = hiraNumero.startsWith("FF") ? hiraNumero.substring(2) : hiraNumero;
+                titre = "FIHIRANA" + typeTitre + " " + hiraNumero + " : ";
+
+                for (int j = 0; j < andininys.size(); j++) {
+                    if (j < andininys.size() - 1) {
+                        titre += andininys.get(j) + ", ";
+                    } else {
+                        titre += andininys.get(j);
+                    }
+                }
+
+                // MAKA NY CONTENU ANATY SLIDE
                 slidesContent = getSlidesContenuHiraAndininy(hira);
 
-                System.out.println("isan ny slide amin ny hira " + hira + " : " + slidesContent.size());
-
+                System.out.println("isan ny slide amin'ny hira " + titre + " : " + slidesContent.size());
                 System.out.println("----------------------");
 
-                for (int j = 0; j < slidesContent.size(); j++) {
-
-                    // Lire l'image de fond
-                    imageFile = new File("img/background/background.jpg");
-                    pictureData = new FileInputStream(imageFile).readAllBytes();
-
-                    // Ajouter l'image à la présentation
-                    pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
-
-                    // Créer une slide
-                    slide = ppt.createSlide();
-
-                    // Insérer l'image en fond (plein écran)
-                    picture = slide.createPicture(pd);
-                    picture.setAnchor(new java.awt.Rectangle(0, 0, 960, 540));
-
-                    // ✅ Ajouter le texte dans la slide
-                    textBox = slide.createTextBox();
-                    textBox.setAnchor(new java.awt.Rectangle(50, 25, 860, 440));
-
-                    paragraph = textBox.addNewTextParagraph();
-                    paragraph.setTextAlign(TextParagraph.TextAlign.CENTER);
-
-                    run = paragraph.addNewTextRun();
-                    run.setText(slidesContent.get(j));
-                    run.setFontSize(45.0);
-                    run.setFontColor(Color.WHITE);
-                    run.setBold(true);
-                    run.setFontFamily("Verdana");
-                    a++;
-                }
+                // MANORATRA ANATY SLIDE MIARAKA AMIN'NY STYLE
+                ecrireContenuSlide(
+                        slidesContent, titre, lignes, "img/background/background.jpg",
+                        imageFile, pictureData, pd, slide,
+                        picture, titreBox, pTitre, rTitre, bodyBox, pBody, rBody, rBodyReste,
+                        ppt, a);
             }
 
             System.out.println("Fitambaran ny slide namboarina : " + a);
