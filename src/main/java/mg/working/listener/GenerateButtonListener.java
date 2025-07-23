@@ -1,37 +1,31 @@
 package mg.working.listener;
 
-import org.apache.poi.xslf.usermodel.XMLSlideShow;
-import org.apache.poi.xslf.usermodel.XSLFSlide;
-import org.apache.poi.xslf.usermodel.XSLFTextBox;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.JTextArea;
+
+import mg.working.message.MessageTraitement;
+import mg.working.powerpoint.PowerpointTraitement;
 
 public class GenerateButtonListener implements ActionListener {
+    private JTextArea input;
+
+    public GenerateButtonListener(JTextArea input) {
+        this.input = input;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String filePath = "test.pptx";
-
-        try (XMLSlideShow ppt = new XMLSlideShow()) {
-            // Création d'une diapositive
-            XSLFSlide slide = ppt.createSlide();
-
-            // Insertion de texte
-            XSLFTextBox textBox = slide.createTextBox();
-            textBox.setText("Bienvenue dans votre présentation PowerPoint !");
-            textBox.setAnchor(new java.awt.Rectangle(50, 50, 400, 100));
-
-            // Sauvegarde dans un fichier
-            try (FileOutputStream out = new FileOutputStream(filePath)) {
-                ppt.write(out);
-                System.out.println("Fichier PowerPoint généré : " + filePath);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        System.out.println("Input received: " + this.input.getText());
+        MessageTraitement messageTraitement = new MessageTraitement();
+        // String[] hira = messageTraitement.getHira(
+        // "SAL.103:1-8.HIR:171/1,3-VVK-S'Aa-FF16/1-VVK-417/2-FKELOKA-487/1-FPINON3-RAHAR-205/2-ANKZ.&T-VVK&S.M-354/3-TORTEN-VVK-547/4-TSDR-RAKITR");
+        // String[] hira = messageTraitement.getHira(this.input.getText());
+        Map<String, List<String>> hiraAndininy = messageTraitement.getHiraSyAndininy(
+                this.input.getText());
+        new PowerpointTraitement(hiraAndininy);
     }
 }
