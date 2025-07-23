@@ -239,7 +239,7 @@ public class PowerpointTraitement {
             rTitre.setText(titre);
             rTitre.setFontSize(29.0);
             rTitre.setBold(true);
-            rTitre.setFontColor(new Color(255, 204, 0)); // or jaune
+            rTitre.setFontColor(new Color(209, 172, 101)); // or jaune
             rTitre.setFontFamily("Verdana");
 
             // CONTENU EN BAS
@@ -248,21 +248,12 @@ public class PowerpointTraitement {
             bodyBox.setVerticalAlignment(VerticalAlignment.TOP);
             lignes = contenuSlide.get(j).split("\n");
 
-            boolean premiereLigne = true;
             String reste = "";
             String ligne = "";
             for (int i = 0; i < lignes.length; i++) {
                 ligne = lignes[i].trim();
 
-                // 🔸 Ignorer la première ligne si elle commence par "HIRA <nombre>"
-                if (premiereLigne && ligne.matches("^HIRA\\s+\\d+.*")) {
-                    premiereLigne = false;
-                    continue;
-                }
-
-                premiereLigne = false;
-
-                // 🔸 Ignorer les lignes de type "F.F 16", "FF16", etc.
+                // 🔸 Ignorer les lignes de type "F.F 16", "FF16", "HIRA 171", etc.
                 if (ligne.matches(".*[A-Za-z]+\\s*\\.?\\s*[0-9]+.*")) {
                     continue;
                 }
@@ -275,7 +266,7 @@ public class PowerpointTraitement {
                     reste = ligne.substring(ligne.indexOf('.') + 1).trim();
                     rBody.setText(ligne.split("\\.")[0] + "- ");
                     rBody.setFontSize(45.0);
-                    rBody.setFontColor(new Color(255, 204, 0));
+                    rBody.setFontColor(new Color(209, 172, 101));
                     rBody.setBold(true);
                     rBody.setFontFamily("Verdana");
 
@@ -296,7 +287,7 @@ public class PowerpointTraitement {
 
                     rBody.setText("Fiv:");
                     rBody.setFontSize(45.0);
-                    rBody.setFontColor(new Color(255, 204, 0));
+                    rBody.setFontColor(new Color(209, 172, 101));
                     rBody.setBold(true);
                     rBody.setFontFamily("Verdana");
 
