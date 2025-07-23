@@ -310,7 +310,7 @@ public class PowerpointTraitement {
         }
     }
 
-    public PowerpointTraitement(Map<String, List<String>> hiraAndininy) {
+    public PowerpointTraitement(Map<String, List<String>> hiraAndininy , List<String> intermediaireHira) {
         this.filePath = getFilePath();
 
         System.out.println("isan ny hira : " + hiraAndininy.size());
@@ -374,6 +374,11 @@ public class PowerpointTraitement {
                         imageFile, pictureData, pd, slide,
                         picture, titreBox, pTitre, rTitre, bodyBox, pBody, rBody, rBodyReste,
                         ppt, a);
+                
+                for(String inter : intermediaireHira) {
+                    
+                }
+                                        
             }
 
             System.out.println("Fitambaran ny slide namboarina : " + a);

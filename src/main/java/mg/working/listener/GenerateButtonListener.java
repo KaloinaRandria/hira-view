@@ -11,6 +11,7 @@ import mg.working.message.MessageTraitement;
 import mg.working.powerpoint.PowerpointTraitement;
 
 public class GenerateButtonListener implements ActionListener {
+
     private JTextArea input;
 
     public GenerateButtonListener(JTextArea input) {
@@ -26,6 +27,7 @@ public class GenerateButtonListener implements ActionListener {
         // String[] hira = messageTraitement.getHira(this.input.getText());
         Map<String, List<String>> hiraAndininy = messageTraitement.getHiraSyAndininy(
                 this.input.getText());
-        new PowerpointTraitement(hiraAndininy);
+        List<String> intermediaire = messageTraitement.getIntermediaireHira(this.input.getText());
+        new PowerpointTraitement(hiraAndininy , intermediaire);
     }
 }

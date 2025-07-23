@@ -46,4 +46,21 @@ public class MessageTraitement {
         return result;
     }
 
+    public List<String> getIntermediaireHira(String input) {
+        List<String> codes = new ArrayList<>();
+        // Mot en majuscule, lettres, chiffres, ou caractères spéciaux sauf '/' et ':'.
+        Pattern pattern = Pattern.compile("\\b([A-Z][A-Z0-9.&']{1,})\\b(?![:/])");
+
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            String code = matcher.group(1);
+            // On filtre ceux qui ne sont ni une chanson ni une référence biblique
+            if (!code.matches("(FF\\d+|\\d+)")) {
+                codes.add(code);
+            }
+        }
+
+        return codes;
+    }
+
 }
