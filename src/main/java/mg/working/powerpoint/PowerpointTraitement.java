@@ -379,7 +379,7 @@ public class PowerpointTraitement {
                         imageFile, pictureData, pd, slide,
                         picture, titreBox, pTitre, rTitre, bodyBox, pBody, rBody, rBodyReste,
                         ppt, a);
-                        
+
                 for (String inter : uniqueIntermediaires) {
                 slide = ppt.createSlide();
 
@@ -390,7 +390,6 @@ public class PowerpointTraitement {
                 // Si image spécifique introuvable, utiliser une image par défaut
                 if (!imageFile.exists()) {
                     imageFile = new File("img/default.jpg");
-                    
                 }
 
                 if (imageFile.exists()) {
