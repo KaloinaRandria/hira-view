@@ -349,37 +349,7 @@ public class PowerpointTraitement {
 
             // === Générer une slide par intermédiaire unique ===
             Set<String> uniqueIntermediaires = new LinkedHashSet<>(intermediaireHira);
-            for (String inter : uniqueIntermediaires) {
-                slide = ppt.createSlide();
-
-                // String safeInter = inter.replaceAll("[^a-zA-Z0-9]", "_");
-                String imagePath = "img/" + inter + ".jpg";
-                imageFile = new File(imagePath);
-
-                // Si image spécifique introuvable, utiliser une image par défaut
-                if (!imageFile.exists()) {
-                    imageFile = new File("img/default.jpg");
-                }
-
-                if (imageFile.exists()) {
-                    pictureData = Files.readAllBytes(imageFile.toPath());
-                    pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
-                    picture = slide.createPicture(pd);
-                    picture.setAnchor(new Rectangle(0, 0, 960, 540));
-                } else {
-                    // Aucun fichier image disponible, afficher le texte
-                    titreBox = slide.createTextBox();
-                    titreBox.setAnchor(new Rectangle(100, 200, 760, 140));
-                    pTitre = titreBox.addNewTextParagraph();
-                    rTitre = pTitre.addNewTextRun();
-                    rTitre.setText(inter);
-                    rTitre.setFontSize(48.0);
-                    rTitre.setBold(true);
-                    rTitre.setFontColor(Color.BLACK);
-                    pTitre.setTextAlign(TextAlign.CENTER);
-                }
-            }
-
+            
             for (int i = 0; i < hiraAndininy.size(); i++) {
                 hira = (Map.Entry<String, List<String>>) hiraAndininy.entrySet().toArray(new Map.Entry[0])[i];
 
@@ -409,9 +379,45 @@ public class PowerpointTraitement {
                         imageFile, pictureData, pd, slide,
                         picture, titreBox, pTitre, rTitre, bodyBox, pBody, rBody, rBodyReste,
                         ppt, a);
+                        
+                for (String inter : uniqueIntermediaires) {
+                slide = ppt.createSlide();
 
+                // String safeInter = inter.replaceAll("[^a-zA-Z0-9]", "_");
+                String imagePath = "img/" + inter + ".jpg";
+                imageFile = new File(imagePath);
+
+                // Si image spécifique introuvable, utiliser une image par défaut
+                if (!imageFile.exists()) {
+                    imageFile = new File("img/default.jpg");
+                    
+                }
+
+                if (imageFile.exists()) {
+                    pictureData = Files.readAllBytes(imageFile.toPath());
+                    pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
+                    picture = slide.createPicture(pd);
+                    picture.setAnchor(new Rectangle(0, 0, 960, 540));
+                    
+                } else {
+                    // Aucun fichier image disponible, afficher le texte
+                    titreBox = slide.createTextBox();
+                    titreBox.setAnchor(new Rectangle(100, 200, 760, 140));
+                    pTitre = titreBox.addNewTextParagraph();
+                    rTitre = pTitre.addNewTextRun();
+                    rTitre.setText(inter);
+                    rTitre.setFontSize(48.0);
+                    rTitre.setBold(true);
+                    rTitre.setFontColor(Color.BLACK);
+                    pTitre.setTextAlign(TextAlign.CENTER);
+                    
+                }
+                
             }
 
+
+            }
+            
             System.out.println("Fitambaran ny slide namboarina : " + a);
             // Sauvegarder le fichier
             try (FileOutputStream out = new FileOutputStream(filePath)) {
