@@ -110,35 +110,6 @@ public class PowerpointTraitement {
     }
 
     // ATAO ANATY LISTE DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
-    public List<String> getSlidesContenuHira(String hira) {
-        File fichier = getFichierPourHira(hira);
-        List<String> slidesContent = new ArrayList<>();
-        if (fichier == null)
-            return slidesContent;
-
-        try (FileInputStream fis = new FileInputStream(fichier);
-                XMLSlideShow ppt = new XMLSlideShow(fis)) {
-            StringBuilder contenuSlide = null;
-            XSLFTextShape textShape = null;
-            for (XSLFSlide slide : ppt.getSlides()) {
-                contenuSlide = new StringBuilder();
-                for (XSLFShape shape : slide.getShapes()) {
-                    if (shape instanceof XSLFTextShape) {
-                        textShape = (XSLFTextShape) shape;
-                        contenuSlide.append(textShape.getText()).append("\n");
-                    }
-                }
-                slidesContent.add(contenuSlide.toString().trim());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return slidesContent;
-    }
-
-    // ATAO ANATY LISTE DE STRING ILAY CONTENU ANATY SLIDE (SLIDE RAY = STRING RAY)
     public List<String> getSlidesContenuHiraAndininy(Map.Entry<String, List<String>> hira) {
         File fichier = getFichierPourHira(hira.getKey());
         List<String> slidesContent = new ArrayList<>();
