@@ -18,7 +18,7 @@ public class App {
         new MainWindow();
         // MessageTraitement messageTraitement = new MessageTraitement();
         // Map<String, List<String>> hiraAndininy = messageTraitement.getHiraSyAndininy(
-        //         "SAL.103:1-8.HIR:171/1,3-VVK-S'Aa-FF16/1-VVK-417/2-FKELOKA-487/1-FPINON3-RAHAR-205/2-ANKZ.&T-VVK&S.M-354/3-TORTEN-VVK-547/4-TSDR-RAKITR");
+        //         "HIRA:14/1,2,3-VVK..787/1-ANKZ.&T-VVK& S.M-163/1,3-TORTEN-VVK&RAINA..F-PINONA1-RAHARA..F'TOMPO:FF4/1-ANTEM.1-FIZARAN:95,96-295/1");
         // PowerpointTraitement ppt = new PowerpointTraitement();
         // List<String> hiraList = ppt.getSlidesContenuHira("205");
         // for (int i = 0; i < hiraList.size(); i++) {
