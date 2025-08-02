@@ -390,6 +390,7 @@ public class PowerpointTraitement {
                 // Si image spécifique introuvable, utiliser une image par défaut
                 if (!imageFile.exists()) {
                     imageFile = new File("img/default.jpg");
+                    break;
                 }
 
                 if (imageFile.exists()) {
@@ -397,7 +398,7 @@ public class PowerpointTraitement {
                     pd = ppt.addPicture(pictureData, PictureData.PictureType.JPEG);
                     picture = slide.createPicture(pd);
                     picture.setAnchor(new Rectangle(0, 0, 960, 540));
-                    
+                    break;
                 } else {
                     // Aucun fichier image disponible, afficher le texte
                     titreBox = slide.createTextBox();
