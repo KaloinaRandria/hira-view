@@ -45,5 +45,4 @@ public class MessageTraitement {
 
         return result;
     }
-
 }
