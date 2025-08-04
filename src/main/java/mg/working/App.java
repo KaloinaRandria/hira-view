@@ -177,7 +177,7 @@ public class App {
         for (int i = 0; i < 56; i++) {
             System.out.println("Hira " + (i + 1) + " : " + "FF" + (i + 1));
             try {
-                if (i < 9) {
+                if ((i + 1) < 10) {
                     // Si le numéro de la Hira est inférieur à 10, on ajoute un zéro devant
                     new App().createPptxFromTxt(new File("data/FF/FF 0" + (i + 1) + ".txt"));
                 } else {
