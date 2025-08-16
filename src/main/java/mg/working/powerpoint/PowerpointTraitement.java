@@ -155,7 +155,7 @@ public class PowerpointTraitement {
                 }
 
                 // MIJERY RAHA MISY "NUMÉRO." AO AMIN'ILAY LIGNE
-                m = Pattern.compile("^(\\d+)\\..*").matcher(premiereLigne);
+                m = Pattern.compile("^(\\d+)[\\.-].*").matcher(premiereLigne);
 
                 if (m.matches()) {
                     // MAKA ILAY NUMÉRO AMIN'ILAY LIGNE
@@ -215,7 +215,7 @@ public class PowerpointTraitement {
 
             // CONTENU EN BAS
             bodyBox = slide.createTextBox();
-            bodyBox.setAnchor(new Rectangle(54, 40, 860, 400)); // position et taille
+            bodyBox.setAnchor(new Rectangle(20, 40, 920, 400)); // position et taille
             bodyBox.setVerticalAlignment(VerticalAlignment.TOP);
             lignes = contenuSlide.get(j).split("\n");
 
@@ -233,9 +233,9 @@ public class PowerpointTraitement {
                 pBody.setTextAlign(TextAlign.CENTER);
                 rBody = pBody.addNewTextRun();
 
-                if (ligne.matches("^\\d+\\..*")) {
-                    reste = ligne.substring(ligne.indexOf('.') + 1).trim();
-                    rBody.setText(ligne.split("\\.")[0] + "- ");
+                if (ligne.matches("^\\d+[\\.-].*")) {
+                    reste = ligne.replaceFirst("^\\d+[\\.-]\\s*", "").trim();
+                    rBody.setText(ligne.split("[\\.-]")[0] + "- ");
                     rBody.setFontSize(45.0);
                     rBody.setFontColor(new Color(209, 172, 101));
                     rBody.setBold(true);

@@ -153,7 +153,7 @@ public class App {
     }
 
     public static void main(String[] args) {
-        // new MainWindow();
+        new MainWindow();
         // MessageTraitement messageTraitement = new MessageTraitement();
         // Map<String, List<String>> hiraAndininy = messageTraitement.getHiraSyAndininy(
         // "HIRA:14/1,2,3-VVK..787/1-ANKZ.&T-VVK&

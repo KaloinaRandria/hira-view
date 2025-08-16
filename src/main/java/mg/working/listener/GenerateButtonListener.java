@@ -22,7 +22,7 @@ public class GenerateButtonListener implements ActionListener {
         System.out.println("Input received: " + this.input.getText());
         MessageTraitement messageTraitement = new MessageTraitement();
         // String[] hira = messageTraitement.getHira(
-        // "SAL.103:1-8.HIR:171/1,3-VVK-S'Aa-FF16/1-VVK-417/2-FKELOKA-487/1-FPINON3-RAHAR-205/2-ANKZ.&T-VVK&S.M-354/3-TORTEN-VVK-547/4-TSDR-RAKITR");
+        // "-HIRA:3/1,2,3-VVK-S'Aa-FF6/2-vvk-294/1,2-FAMELAK.-FF7/1-F.PINON.2-RAHAR-177/1-ANK&T.-S.M-638/2-TTENY-VVK-298/1-");
         // String[] hira = messageTraitement.getHira(this.input.getText());
         Map<String, List<String>> hiraAndininy = messageTraitement.getHiraSyAndininy(
                 this.input.getText());
